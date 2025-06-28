@@ -1,0 +1,216 @@
+<!-- ======================================================================= -->
+<!-- FILE: manajemen-karyawan.page.html (DISESUAIKAN & LENGKAP)             -->
+<!-- DESKRIPSI: Kode ini telah diselaraskan dengan variables.scss global.   -->
+<!-- PERUBAHAN UTAMA:                                                      -->
+<!-- 1. Warna `ion-toolbar` diubah menjadi 'light' untuk mode terang agar   -->
+<!--    konsisten dengan halaman lain dan tidak berwarna biru.             -->
+<!-- 2. Ikon theme toggle sekarang menggunakan atribut `color` dari Ionic  -->
+<!--    untuk konsistensi tema, bukan kelas CSS spesifik.                  -->
+<!-- 3. Styling kustom untuk tombol dan searchbar dipertahankan sesuai     -->
+<!--    permintaan.                                                        -->
+<!-- ======================================================================= -->
+
+<!-- ======================================================================= -->
+<!-- HEADER HALAMAN                                                          -->
+<!-- ======================================================================= -->
+<ion-header class="ion-no-border">
+  <!-- [PENYESUAIAN] Warna diubah ke 'light' untuk mode terang -->
+  <ion-toolbar [color]="(isDarkMode$ | async) ? 'dark' : 'light'" class="border-b border-slate-200 dark:border-slate-700">
+    <ion-title class="font-bold text-lg">Manajemen Karyawan</ion-title>
+    <ion-buttons slot="end">
+      <div class="flex items-center pr-2">
+        <!-- [PENYESUAIAN] Ikon menggunakan `color="warning"` dari tema -->
+        <ion-icon name="sunny-outline" color="warning" *ngIf="!(isDarkMode$ | async)"></ion-icon>
+        <ion-toggle [checked]="isDarkMode$ | async" (ionChange)="toggleTheme()" class="mx-1"></ion-toggle>
+        <!-- [PENYESUAIAN] Ikon menggunakan `color="medium"` dari tema -->
+        <ion-icon name="moon-outline" color="medium" *ngIf="isDarkMode$ | async"></ion-icon>
+      </div>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- ======================================================================= -->
+<!-- KONTEN UTAMA                                                              -->
+<!-- ======================================================================= -->
+<ion-content [fullscreen]="true" class="bg-slate-50 dark:bg-slate-900">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    
+    <!-- Header Halaman & Kontrol Aksi -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md mb-6">
+      <div class="p-5 border-b border-slate-200 dark:border-slate-700">
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+          Daftar Karyawan
+        </h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Kelola data, status, dan shift untuk semua karyawan.
+        </p>
+      </div>
+      <div class="p-5 flex flex-col md:flex-row items-center gap-4">
+        <div class="w-full md:flex-1">
+            <ion-searchbar (ionInput)="handleSearch($event)" placeholder="Cari nama atau NIK..." class="custom-searchbar"></ion-searchbar>
+        </div>
+        <div class="flex items-stretch justify-end gap-2 w-full md:w-auto">
+          <!-- Tombol "Putar Shift" dengan kelas kustom (dipertahankan) -->
+          <ion-button (click)="confirmRotateShift()" fill="outline" class="flex-1 dark:text-gray-100 md:flex-initial btn-putar-shift">
+            <ion-icon name="sync-outline" slot="start"></ion-icon>
+            Putar Shift
+          </ion-button>
+          <!-- Tombol "Tambah" dengan kelas kustom (dipertahankan) -->
+          <ion-button (click)="openForm()" class="flex-1 md:flex-initial btn-tambah">
+            <ion-icon name="add-outline"></ion-icon>
+            <p class="mr-2">Tambah Karyawan</p>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indikator Loading & Pesan Error -->
+    <div *ngIf="isLoading" class="bg-white dark:bg-slate-800 rounded-xl shadow-md flex justify-center items-center py-24">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+    <div *ngIf="errorMessage && !isLoading" class="text-center p-8 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-xl">
+      <ion-icon name="cloud-offline-outline" class="text-4xl text-red-500 dark:text-red-400 mb-2"></ion-icon>
+      <p class="font-semibold text-red-600 dark:text-red-400">Gagal Memuat Data</p>
+      <p class="text-sm text-red-500 dark:text-red-400/80 mt-1">{{ errorMessage }}</p>
+    </div>
+
+    <!-- Kontainer Daftar Karyawan -->
+    <div *ngIf="!isLoading && employees && employees.length > 0">
+        <div class="hidden md:grid md:grid-cols-12 gap-4 px-4 py-3 bg-slate-200 dark:bg-slate-800/50 rounded-t-lg text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+            <div class="md:col-span-4">Karyawan</div>
+            <div class="md:col-span-3">Kontak</div>
+            <div class="md:col-span-3">Info Tambahan</div>
+            <div class="md:col-span-2 text-center">Aksi</div>
+        </div>
+        <div class="space-y-4 md:space-y-0">
+            <div *ngFor="let k of employees; let i = index" class="bg-white dark:bg-slate-800 rounded-lg shadow-md md:rounded-none md:shadow-none p-4 md:p-0 md:border-b border-slate-200 dark:border-slate-700">
+                <div class="block md:grid md:grid-cols-12 md:gap-4 md:px-4 md:py-3 md:items-center">
+                    <div class="md:col-span-4 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <img class="h-14 w-14 rounded-full object-cover border border-slate-300 dark:border-slate-600" [src]="'https://dapuremak.site/storage/' + k.profile?.foto" [alt]="k.profile?.name" onerror="this.src='https://ionicframework.com/docs/img/demos/avatar.svg'"/>
+                            <div class="ml-4">
+                                <div class="font-semibold text-base text-slate-900 dark:text-white">{{ k.profile?.name ?? '-' }}</div>
+                                <div class="text-sm text-slate-500 dark:text-slate-400">{{ k.shift?.namaShift ?? 'No Shift' }}</div>
+                            </div>
+                        </div>
+                        <span class="md:hidden px-2 inline-flex text-xs leading-5 font-semibold rounded-full" [ngClass]="k.statusUsers === 'aktif' ? 'bg-green-100 text-green-800 dark:bg-green-800/50 dark:text-green-100' : 'bg-red-100 text-red-800 dark:bg-red-800/50 dark:text-red-100'">
+                            {{ k.statusUsers }}
+                        </span>
+                    </div>
+                    <hr class="my-3 border-slate-200 dark:border-slate-700 md:hidden">
+                    <div class="md:col-span-3 space-y-2 text-sm">
+                        <div class="flex justify-between md:block">
+                            <span class="font-semibold text-slate-500 md:hidden">Email: </span>
+                            <span class="text-slate-700 dark:text-slate-300 truncate text-right md:text-left">{{ k.email }}</span>
+                        </div>
+                        <div class="flex justify-between md:block">
+                            <span class="font-semibold text-slate-500 md:hidden">Telepon: </span>
+                            <span class="text-slate-700 dark:text-slate-300 text-right md:text-left">{{ k.profile?.noTelepon ?? '-' }}</span>
+                        </div>
+                    </div>
+                    <div class="md:col-span-3 space-y-2 text-sm">
+                        <div class="flex justify-between md:block mt-2 md:mt-0">
+                            <span class="font-semibold text-slate-500 md:hidden">NIK: </span>
+                            <span class="text-slate-700 dark:text-slate-300 text-right md:text-left">{{ k.profile?.nik ?? '-' }}</span>
+                        </div>
+                         <div class="hidden md:flex items-center justify-start mt-1">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" [ngClass]="k.statusUsers === 'aktif' ? 'bg-green-100 text-green-800 dark:bg-green-800/50 dark:text-green-100' : 'bg-red-100 text-red-800 dark:bg-red-800/50 dark:text-red-100'">
+                                {{ k.statusUsers }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 mt-4 md:mt-0">
+                        <div class="flex items-center justify-end md:justify-center space-x-1">
+                            <ion-button (click)="openForm(k)" fill="solid" size="small" color="secondary" class="ion-no-margin">
+                                <ion-icon slot="icon-only" name="create-outline" aria-label="Edit"></ion-icon>
+                            </ion-button>
+                            <ion-button (click)="confirmDelete(k)" fill="solid" size="small" color="danger" class="ion-no-margin">
+                                <ion-icon slot="icon-only" name="trash-outline" aria-label="Hapus"></ion-icon>
+                            </ion-button>
+                            <ion-button *ngIf="k.statusUsers !== 'aktif'" (click)="confirmSendEmail(k)" fill="solid" size="small" color="success" class="ion-no-margin">
+                                <ion-icon slot="icon-only" name="mail-outline" aria-label="Kirim Email"></ion-icon>
+                            </ion-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tampilan Jika Tidak Ada Karyawan -->
+    <div *ngIf="!isLoading && (!employees || employees.length === 0) && !errorMessage" class="text-center p-16 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 rounded-lg shadow-md">
+        <ion-icon name="people-outline" class="text-5xl mb-3"></ion-icon>
+        <p class="text-lg font-semibold">Tidak Ada Karyawan</p>
+        <p class="text-sm">Data karyawan yang Anda cari tidak ditemukan.</p>
+    </div>
+  </div>
+</ion-content>
+
+<!-- ======================================================================= -->
+<!-- CSS KUSTOM (DIPERTAHANKAN SESUAI ASLINYA)                               -->
+<!-- ======================================================================= -->
+<style>
+  /* === Tombol Solid Kustom (Tambah Karyawan) === */
+  ion-button.btn-tambah {
+    --background: #2563eb; /* Biru */
+    --color: #ffffff; /* Putih */
+    --background-activated: #1d4ed8;
+    --background-focused: #1d4ed8;
+    --background-hover: #1e40af;
+    --border-radius: 8px;
+    --box-shadow: none;
+    font-weight: 600;
+  }
+  
+  /* === Tombol Outline Kustom (Putar Shift) === */
+  ion-button.btn-putar-shift {
+    --color: #475569; /* Abu-abu kebiruan */
+    --border-color: #cbd5e1;
+    --ripple-color: #475569;
+    --border-radius: 8px;
+    font-weight: 600;
+  }
+  ion-button.btn-putar-shift:hover {
+      --border-color: #475569;
+      --background: #f1f5f9;
+  }
+
+  /* === Penyesuaian Warna Tombol untuk Mode Gelap === */
+  body.dark ion-button.btn-tambah {
+      --background: #3b82f6;
+      --background-activated: #60a5fa;
+      --background-focused: #60a5fa;
+      --background-hover: #2563eb;
+      --color: #ffffff;
+  }
+  body.dark ion-button.btn-putar-shift {
+      --color: #94a3b8; /* Abu-abu terang */
+      --border-color: #475569;
+      --ripple-color: #94a3b8;
+  }
+  body.dark ion-button.btn-putar-shift:hover {
+      --border-color: #94a3b8;
+      --background: rgba(148, 163, 184, 0.1);
+  }
+
+  /* === CSS Kustom untuk Searchbar === */
+  .custom-searchbar {
+    --background: #f1f5f9; /* bg-slate-100 */
+    --border-radius: 12px;
+    --box-shadow: none;
+    --placeholder-color: #64748b; /* text-slate-500 */
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+  }
+  body.dark .custom-searchbar {
+    --background: #334155; /* bg-slate-700 */
+    --color: #f1f5f9; /* text-slate-100 */
+    --placeholder-color: #94a3b8; /* text-slate-400 */
+    --icon-color: #94a3b8;
+    --clear-button-color: #94a3b8;
+  }
+</style>

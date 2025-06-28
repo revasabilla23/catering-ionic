@@ -1,0 +1,57 @@
+/*
+  PENTING: Definisi variabel tema TELAH DIPINDAHKAN ke src/theme/variables.scss.
+  File ini sekarang hanya berisi style khusus untuk halaman login.
+*/
+
+ion-content {
+  /* Menggunakan variabel dari variables.scss untuk background default (mode terang) */
+  --background: linear-gradient(135deg, var(--light-blue) 0%, var(--grey) 100%);
+  transition: --background 0.3s ease;
+}
+
+/*
+  Saat body.dark aktif, variabel --light dan --dark-grey dari variables.scss 
+  akan digunakan secara otomatis oleh aturan di bawah ini.
+*/
+:host-context(body.dark) ion-content {
+  --background: linear-gradient(135deg, var(--light) 0%, var(--dark-grey) 100%);
+}
+
+.login-card {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* For Safari */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+:host-context(body.dark) .login-card {
+  background-color: rgba(26, 32, 44, 0.95);
+  border: 1px solid rgba(74, 85, 104, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.input-icon {
+  /* Menggunakan variabel yang sudah diganti namanya dari variables.scss */
+  color: var(--primary-theme-color);
+}
+
+.btn-login {
+  /* Menggunakan variabel yang sudah diganti namanya */
+  background: linear-gradient(135deg, var(--primary-theme-color) 0%, #0066cc 100%);
+  box-shadow: 0 4px 6px rgba(0, 136, 255, 0.2);
+}
+
+.btn-login:hover {
+  background: linear-gradient(135deg, #0066cc 0%, var(--primary-theme-color) 100%);
+  box-shadow: 0 6px 8px rgba(0, 136, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+}
+

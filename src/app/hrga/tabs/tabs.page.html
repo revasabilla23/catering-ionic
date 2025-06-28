@@ -1,0 +1,85 @@
+<!--
+  ============================================================================
+  File: 		tabs.page.html (Disesuaikan dengan variables.scss)
+  Deskripsi: 	Komponen Tabs yang menerapkan sistem warna dan gaya modern
+            	(outline/filled icons) sesuai tema aplikasi.
+  Versi: 		2.0
+  ============================================================================
+-->
+
+<!-- 
+    CSS kustom untuk menyempurnakan tampilan Tab Bar.
+    - Menambahkan border atas.
+    - Mengatur warna tab aktif sesuai variabel tema.
+    - Mengganti ikon dari outline menjadi filled saat aktif.
+-->
+<style>
+    ion-tab-bar {
+        border-top: 1px solid rgba(var(--ion-text-color-rgb), 0.1);
+        padding-top: 4px;
+        padding-bottom: 4px;
+        height: 60px;
+    }
+
+    ion-tab-button {
+        color: var(--ion-color-medium);
+    }
+    
+    ion-tab-button.tab-selected {
+        color: var(--ion-color-secondary);
+        font-weight: 700;
+    }
+    
+    /* Logika untuk menampilkan/menyembunyikan ikon */
+    .icon-default { display: block; }
+    .icon-active { display: none; }
+
+    .tab-selected .icon-default { display: none; }
+    .tab-selected .icon-active { display: block; }
+</style>
+
+<ion-tabs>
+    <ion-tab-bar slot="bottom">
+
+        <ion-tab-button tab="dashboard" href="/hrga/dashboard">
+            <div class="flex flex-col items-center justify-center">
+                <ion-icon name="home-outline" class="icon-default" aria-hidden="true"></ion-icon>
+                <ion-icon name="home" class="icon-active" aria-hidden="true"></ion-icon>
+                <ion-label>Dashboard</ion-label>
+            </div>
+        </ion-tab-button>
+
+        <ion-tab-button tab="employees" href="/hrga/employees">
+            <div class="flex flex-col items-center justify-center">
+                <ion-icon name="people-outline" class="icon-default" aria-hidden="true"></ion-icon>
+                <ion-icon name="people" class="icon-active" aria-hidden="true"></ion-icon>
+                <ion-label>Karyawan</ion-label>
+            </div>
+        </ion-tab-button>
+
+        <ion-tab-button tab="orders" href="/hrga/orders">
+             <div class="flex flex-col items-center justify-center">
+                <ion-icon name="reader-outline" class="icon-default" aria-hidden="true"></ion-icon>
+                <ion-icon name="reader" class="icon-active" aria-hidden="true"></ion-icon>
+                <ion-label>Order</ion-label>
+            </div>
+        </ion-tab-button>
+        
+        <ion-tab-button tab="konsumsi" href="/hrga/konsumsi">
+            <div class="flex flex-col items-center justify-center">
+                <ion-icon name="fast-food-outline" class="icon-default" aria-hidden="true"></ion-icon>
+                <ion-icon name="fast-food" class="icon-active" aria-hidden="true"></ion-icon>
+                <ion-label>Konsumsi</ion-label>
+            </div>
+        </ion-tab-button>
+
+        <ion-tab-button tab="report" href="/hrga/report">
+            <div class="flex flex-col items-center justify-center">
+                <ion-icon name="analytics-outline" class="icon-default" aria-hidden="true"></ion-icon>
+                <ion-icon name="analytics" class="icon-active" aria-hidden="true"></ion-icon>
+                <ion-label>Report</ion-label>
+            </div>
+        </ion-tab-button>
+
+    </ion-tab-bar>
+</ion-tabs>

@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-title>Dashboard</ion-title>
+    <ion-button slot="end" fill="clear" (click)="logout()" color="light">Logout</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="h-full flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+    <div class="max-w-sm w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <ion-card class="rounded-2xl shadow-lg dark:bg-gray-800">
+        <ion-card-header class="text-center">
+          <ion-card-title class="text-xl font-semibold dark:text-white">QR Token Anda</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content class="text-center">
+          <!-- Area untuk QR Code -->
+          <div class="flex justify-center mb-4 min-h-[180px] items-center">
+            <div #qrcode *ngIf="qrData && !isLoading && !errorMessage" class="w-[180px] h-[180px]"></div>
+            <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+            <div *ngIf="errorMessage && !isLoading" class="text-red-500">{{ errorMessage }}</div>
+          </div>
+          
+          <!-- Info Token dan Expired -->
+          <div class="border rounded-lg p-4 text-sm mb-4 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 bg-gray-50 border-gray-300 text-gray-700">
+            <div *ngIf="qrData && !isLoading; else loadingQrInfo" class="break-all text-left">
+              <p><span class="font-semibold">Token:</span><br>{{ qrData.token }}</p>
+              <p class="mt-2"><span class="font-semibold">Expired:</span><br>{{ qrData.expired }}</p>
+            </div>
+            <ng-template #loadingQrInfo>
+              <span *ngIf="isLoading">Memuat info QR...</span>
+              <span *ngIf="errorMessage" class="text-red-500">Gagal memuat info.</span>
+            </ng-template>
+          </div>
+          
+          <p class="text-sm text-gray-500 dark:text-gray-400">QR code ini diperbarui otomatis setiap 15 detik.</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

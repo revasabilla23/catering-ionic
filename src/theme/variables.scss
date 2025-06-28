@@ -1,0 +1,121 @@
+/*
+  ============================================================================
+  File: variables.scss (Diverifikasi & Disesuaikan)
+  Deskripsi: File styling ini mendefinisikan palet warna untuk tema terang
+             dan gelap yang digunakan oleh seluruh aplikasi, termasuk toolbar.
+  ============================================================================
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+
+:root {
+  /* Menggunakan font-family dari palet baru */
+  --ion-font-family: 'Lato', sans-serif;
+
+  /* Warna dasar untuk mode terang */
+  --ion-background-color: #eeeeee;
+  --ion-background-color-rgb: 238, 238, 238;
+  --ion-text-color: #342e37;
+  --ion-text-color-rgb: 52, 46, 55;
+  --ion-item-background: #f9f9f9;
+  
+  /* Warna untuk Toolbar di mode terang. `color="light"` pada toolbar akan menggunakan ini. */
+  --ion-color-light: #f9f9f9;
+  --ion-color-light-rgb: 249, 249, 249;
+  --ion-color-light-contrast: #342e37;
+  --ion-color-light-contrast-rgb: 52, 46, 55;
+  
+  --ion-color-medium: #aaaaaa;
+  --ion-color-dark: #342e37;
+
+  /*
+    ============================================================================
+    [PERUBAHAN] WARNA PRIMER UNTUK MODE TERANG
+    ============================================================================
+    Warna primer sekarang menggunakan palet biru yang jelas untuk tombol dan
+    elemen interaktif lainnya, membedakannya dari header.
+  */
+  --ion-color-primary: #2563eb;          /* Warna Biru Profesional (misal: blue-600 dari Tailwind) */
+  --ion-color-primary-rgb: 37, 99, 235;
+  --ion-color-primary-contrast: #ffffff;    /* Teks warna putih agar kontras */
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #2158cf;      /* Sedikit lebih gelap */
+  --ion-color-primary-tint: #3b74ed;       /* Sedikit lebih terang */
+  
+  /** secondary **/
+  --ion-color-secondary: #0088ff;
+  --ion-color-secondary-rgb: 0,136,255;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255,255,255;
+  --ion-color-secondary-shade: #0078e0;
+  --ion-color-secondary-tint: #1a94ff;
+
+  /** tertiary **/
+  --ion-color-tertiary: #abd5ff;
+  --ion-color-tertiary-rgb: 171,213,255;
+  --ion-color-tertiary-contrast: #000000;
+  --ion-color-tertiary-contrast-rgb: 0,0,0;
+  --ion-color-tertiary-shade: #97bbdf;
+  --ion-color-tertiary-tint: #b4d8ff;
+
+  /** success, warning, danger **/
+  --ion-color-success: #2dd36f;
+  --ion-color-warning: #ffc409;
+  --ion-color-danger: #db504a;
+}
+
+
+/*
+ * ============================================================================
+ * TEMA MODE GELAP
+ * ============================================================================
+ */
+body.dark {
+  /* Warna dasar untuk mode gelap */
+  --ion-background-color: #1a202c;
+  --ion-background-color-rgb: 26, 32, 44;
+  --ion-text-color: #f7fafc;
+  --ion-text-color-rgb: 247, 250, 252;
+  --ion-item-background: #2d3748;
+  --ion-color-medium: #4a5568;
+  --ion-color-light: #2d3748;
+
+  /*
+    ============================================================================
+    WARNA TOOLBAR UNTUK MODE GELAP
+    ============================================================================
+    `color="dark"` pada toolbar akan menggunakan warna ini.
+  */
+  --ion-color-dark: #2d3748;
+  --ion-color-dark-rgb: 45, 55, 72;
+  --ion-color-dark-contrast: #f7fafc;
+  --ion-color-dark-contrast-rgb: 247, 250, 252;
+  --ion-color-dark-shade: #283041;
+  --ion-color-dark-tint: #424b5c;
+
+  /* [PENYESUAIAN] Definisi ulang warna primer untuk mode gelap.
+    Warna ini sudah bagus dan kontras, jadi tidak perlu diubah.
+    Tombol akan berwarna biru muda di atas latar gelap.
+  */
+  --ion-color-primary: #63b3ed;
+  --ion-color-primary-rgb: 99, 179, 237;
+  --ion-color-primary-contrast: #000000;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+
+  /* Definisi ulang warna lain untuk mode gelap */
+  --ion-color-secondary: #2c5282;
+  --ion-color-secondary-rgb: 44, 82, 130;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+
+  --ion-color-tertiary: #2c3e50;
+  --ion-color-tertiary-rgb: 44, 62, 80;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+
+  --ion-color-success: #2dd36f;
+  --ion-color-warning: #ffc409;
+  --ion-color-danger: #e53e3e;
+}

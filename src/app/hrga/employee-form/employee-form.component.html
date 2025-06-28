@@ -1,0 +1,170 @@
+<!--
+  ============================================================================
+  File: 		employee-form.component.html (Disesuaikan dengan variables.scss)
+  Deskripsi: 	Formulir Karyawan yang menerapkan sistem warna dan tema
+            	dari file variables.scss untuk konsistensi di seluruh aplikasi.
+  Versi: 		2.0
+  ============================================================================
+-->
+
+<!-- 
+    CSS Kustom yang menerapkan variabel dari theme/variables.scss.
+    Ini memastikan formulir memiliki tampilan yang konsisten dengan tema aplikasi.
+-->
+<style>
+    ion-toolbar {
+        --background: var(--ion-color-primary);
+        --color: var(--ion-color-primary-contrast);
+        --border-color: rgba(var(--ion-color-primary-contrast-rgb), 0.15);
+    }
+    
+    ion-content {
+        --background: var(--ion-background-color);
+    }
+
+    /* Styling untuk setiap grup form (label + input) */
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    /* Styling untuk label */
+    .form-label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 700; /* Lato bold */
+        color: var(--ion-text-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Styling untuk semua jenis input field */
+    .form-input-field {
+        --background: var(--ion-item-background);
+        --color: var(--ion-text-color);
+        --placeholder-color: var(--ion-color-medium);
+        --padding-start: 1rem;
+        --padding-end: 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(var(--ion-text-color-rgb), 0.15);
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input-field.ion-invalid.ion-touched {
+        border-color: var(--ion-color-danger);
+    }
+    
+    .form-input-field.ion-focused {
+        border-color: var(--ion-color-secondary);
+        box-shadow: 0 0 0 3px rgba(var(--ion-color-secondary-rgb), 0.2);
+    }
+    
+    /* Styling untuk tombol utama di footer */
+    ion-footer ion-button {
+        --background: var(--ion-color-secondary);
+        --background-hover: var(--ion-color-secondary-shade);
+        --background-activated: var(--ion-color-secondary-shade);
+        --color: var(--ion-color-secondary-contrast);
+        --box-shadow: 0 4px 15px rgba(var(--ion-color-secondary-rgb), 0.2);
+        font-weight: 700;
+        height: 48px;
+    }
+
+    /* Styling untuk area foto profil */
+    .profile-picture-container {
+        border: 3px solid var(--ion-color-tertiary);
+        transition: transform 0.2s ease-in-out;
+    }
+    .profile-picture-container:hover {
+        transform: scale(1.05);
+        cursor: pointer;
+    }
+</style>
+
+<!-- Toolbar header modal, menggunakan warna 'primary' dari tema -->
+<ion-header class="ion-no-border">
+    <ion-toolbar>
+        <ion-title class="font-bold">{{ isEditMode ? 'Edit Data Karyawan' : 'Tambah Karyawan Baru' }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="cancel()">
+                <ion-icon slot="icon-only" name="close" aria-label="Tutup"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <form [formGroup]="form">
+        <!-- Area Foto Profil -->
+        <div class="mb-6 flex flex-col items-center">
+            <img 
+                [src]="imageBase64 || (employee?.profile?.foto ? 'https://dapuremak.site/storage/' + employee.profile.foto : 'https://ionicframework.com/docs/img/demos/avatar.svg')" 
+                alt="Foto Profil" 
+                class="w-28 h-28 rounded-full object-cover mx-auto shadow-lg profile-picture-container" 
+                (click)="openFileSelector(fileInput)" 
+            />
+            <input 
+                type="file" 
+                accept="image/*" 
+                hidden 
+                #fileInput 
+                (change)="onFileSelected($event)" 
+            />
+            <p class="text-sm mt-2" [style.color]="'var(--ion-color-medium)'">Klik untuk mengubah foto</p>
+        </div>
+
+        <!-- Grup Form Fields -->
+        <div class="space-y-5">
+            <div class="form-group">
+                <label class="form-label" for="name">Nama Lengkap</label>
+                <ion-input id="name" class="form-input-field" placeholder="Masukkan nama lengkap" formControlName="name" required></ion-input>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <ion-input id="email" class="form-input-field" type="email" placeholder="contoh@email.com" formControlName="email" required></ion-input>
+            </div>
+            
+            <div class="form-group" *ngIf="!isEditMode">
+                <label class="form-label" for="password">Password</label>
+                <ion-input id="password" class="form-input-field" type="password" placeholder="Minimal 6 karakter" formControlName="password" required></ion-input>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="form-group">
+                    <label class="form-label" for="shift">Shift Kerja</label>
+                    <ion-select id="shift" class="form-input-field" placeholder="Pilih shift" formControlName="IdShift" interface="popover" required>
+                        <ion-select-option *ngFor="let shift of shifts" [value]="shift.IdShift">{{ shift.namaShift }}</ion-select-option>
+                    </ion-select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="nik">NIK</label>
+                    <ion-input id="nik" class="form-input-field" type="number" placeholder="Masukkan NIK" formControlName="nik" required></ion-input>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                 <div class="form-group">
+                    <label class="form-label" for="noTelepon">No. Telepon</label>
+                    <ion-input id="noTelepon" class="form-input-field" type="tel" placeholder="08xxxxxxxx" formControlName="noTelepon" required></ion-input>
+                </div>
+
+                <div class="form-group">
+                     <label class="form-label" for="tanggalLahir">Tanggal Lahir</label>
+                    <ion-input id="tanggalLahir" class="form-input-field" type="date" formControlName="tanggalLahir" required></ion-input>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="address">Alamat</label>
+                <ion-textarea id="address" class="form-input-field" placeholder="Masukkan alamat lengkap" formControlName="address" [autoGrow]="true" required></ion-textarea>
+            </div>
+        </div>
+    </form>
+</ion-content>
+
+<!-- Tombol Aksi di Footer -->
+<ion-footer class="ion-no-border ion-padding">
+    <ion-button expand="block" (click)="confirm()" [disabled]="form.invalid">
+        {{ isEditMode ? 'Update Karyawan' : 'Simpan Karyawan Baru' }}
+    </ion-button>
+</ion-footer>
