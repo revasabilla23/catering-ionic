@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonContent, LoadingController, ToastController } from '@ionic/angular/standalone';
+import { IonContent, IonIcon, LoadingController, ToastController } from '@ionic/angular/standalone';
 import { AuthService } from '../services/auth.service';
 import { first } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.page.html',
-    // styleUrls tidak diperlukan jika style ada di HTML
     standalone: true,
-    imports: [ CommonModule, FormsModule, ReactiveFormsModule, IonContent ]
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, IonContent, IonIcon]
 })
 export class LoginPage implements OnInit {
     loginForm: FormGroup;
@@ -26,21 +27,27 @@ export class LoginPage implements OnInit {
         private toastController: ToastController,
         private router: Router
     ) {
+        // Register icons
+        addIcons({ eyeOutline, eyeOffOutline });
+
+        // Initialize form
         this.loginForm = this.fb.group({
             email: ['', [Validators.required, Validators.email]],
-            password: ['', [Validators.required, Validators.minLength(6)]],
+            password: ['', [Validators.required, Validators.minLength(6)]]
         });
     }
 
     ngOnInit() {
-        // Cek tema saat komponen diinisialisasi
-        const storedTheme = localStorage.getItem('theme');
-        if (storedTheme) {
-            this.isDarkMode = storedTheme === 'dark';
-        } else {
-            // Jika tidak ada tema tersimpan, gunakan preferensi sistem
-            this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
+        this.checkThemePreference();
+    }
+
+    private checkThemePreference() {
+        // Check saved theme preference or use system preference
+        const savedTheme = localStorage.getItem('theme');
+        this.isDarkMode = savedTheme 
+            ? savedTheme === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
         this.applyTheme();
     }
 
@@ -51,7 +58,6 @@ export class LoginPage implements OnInit {
     }
 
     private applyTheme() {
-        // Menambahkan atau menghapus kelas 'dark' dari elemen body
         document.body.classList.toggle('dark', this.isDarkMode);
     }
     
@@ -61,41 +67,54 @@ export class LoginPage implements OnInit {
 
     async login() {
         if (this.loginForm.invalid) {
-            this.presentToast('Harap isi email dan password dengan benar.', 'danger');
+            await this.showErrorToast('Harap isi email dan password dengan benar');
             return;
         }
 
-        const loading = await this.loadingController.create({ message: 'Mohon tunggu...' });
-        await loading.present();
-
-        const { email, password } = this.loginForm.value;
+        const loading = await this.showLoading();
         
-        this.authService.login({ email, password }).pipe(first()).subscribe({
-            next: (user) => {
-                loading.dismiss();
-                if (user && user.role) {
-                    this.authService.redirectUser(user.role); 
-                } else {
-                    // Fallback jika tidak ada role, mungkin ke halaman dashboard umum
-                    this.router.navigate(['/dashboard']); 
-                }
-            },
-            error: (err) => {
-                loading.dismiss();
-                // Memberikan pesan error yang lebih spesifik jika memungkinkan
-                const errorMessage = err.error?.message || 'Login Gagal! Periksa kembali email dan password Anda.';
-                this.presentToast(errorMessage, 'danger');
+        try {
+            const { email, password } = this.loginForm.value;
+            const user = await this.authService.login({ email, password })
+                .pipe(first())
+                .toPromise();
+
+            loading.dismiss();
+            
+            if (user?.role) {
+                this.authService.redirectUser(user.role);
+            } else {
+                this.router.navigate(['/dashboard']);
             }
-        });
+        } catch (error) {
+            loading.dismiss();
+            this.handleLoginError(error);
+        }
     }
 
-    async presentToast(message: string, color: 'primary' | 'success' | 'danger' | 'warning') {
+    private async showLoading() {
+        const loading = await this.loadingController.create({
+            message: 'Memproses...',
+            spinner: 'crescent'
+        });
+        await loading.present();
+        return loading;
+    }
+
+    private async showErrorToast(message: string) {
         const toast = await this.toastController.create({
-            message: message,
+            message,
             duration: 3000,
             position: 'bottom',
-            color: color
+            color: 'danger',
+            buttons: [{ text: 'OK', role: 'cancel' }]
         });
-        toast.present();
+        await toast.present();
+    }
+
+    private handleLoginError(error: any) {
+        const errorMessage = error.error?.message || 
+                           'Login gagal. Periksa kembali email dan password Anda.';
+        this.showErrorToast(errorMessage);
     }
 }

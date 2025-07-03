@@ -18,12 +18,18 @@
   <ion-toolbar [color]="(isDarkMode$ | async) ? 'dark' : 'light'" class="border-b border-slate-200 dark:border-slate-700">
     <ion-title class="font-bold text-lg">Manajemen Karyawan</ion-title>
     <ion-buttons slot="end">
-      <div class="flex items-center pr-2">
-        <!-- [PENYESUAIAN] Ikon menggunakan `color="warning"` dari tema -->
-        <ion-icon name="sunny-outline" color="warning" *ngIf="!(isDarkMode$ | async)"></ion-icon>
-        <ion-toggle [checked]="isDarkMode$ | async" (ionChange)="toggleTheme()" class="mx-1"></ion-toggle>
-        <!-- [PENYESUAIAN] Ikon menggunakan `color="medium"` dari tema -->
-        <ion-icon name="moon-outline" color="medium" *ngIf="isDarkMode$ | async"></ion-icon>
+      <div class="flex items-center pr-2 gap-2">
+        <!-- Theme Toggle -->
+        <div class="flex items-center">
+          <ion-icon name="sunny-outline" class="text-yellow-500" *ngIf="!(isDarkMode$ | async)"></ion-icon>
+          <ion-toggle [checked]="isDarkMode$ | async" (ionChange)="toggleTheme()" class="mx-1"></ion-toggle>
+          <ion-icon name="moon-outline" class="text-slate-400" *ngIf="isDarkMode$ | async"></ion-icon>
+        </div>
+        
+        <!-- Logout Button -->
+        <ion-button fill="clear" (click)="logout()" class="text-gray-600 dark:text-gray-300">
+          <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+        </ion-button>
       </div>
     </ion-buttons>
   </ion-toolbar>
@@ -32,7 +38,7 @@
 <!-- ======================================================================= -->
 <!-- KONTEN UTAMA                                                              -->
 <!-- ======================================================================= -->
-<ion-content [fullscreen]="true" class="bg-slate-50 dark:bg-slate-900">
+<ion-content class="bg-slate-50 dark:bg-slate-900">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>

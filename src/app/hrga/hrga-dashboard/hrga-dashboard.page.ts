@@ -11,8 +11,10 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonButton, 
   IonSpinner, IonIcon, IonRefresher, IonRefresherContent, 
   IonPopover, IonList, IonItem, IonLabel, IonAvatar, 
-  IonToggle, IonButtons, IonItemDivider, IonBadge 
+  IonToggle, IonButtons, IonItemDivider, IonBadge,
+  AlertController
 } from '@ionic/angular/standalone';
+import { RouterLink } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { 
   sunnyOutline, moonOutline, clipboardOutline, peopleOutline, 
@@ -20,13 +22,15 @@ import {
   personAddOutline, addCircleOutline, syncOutline, 
   documentTextOutline, checkmarkCircle, closeCircle, 
   personCircleOutline, logOutOutline, locationOutline, 
-  callOutline, businessOutline, settingsOutline 
+  callOutline, businessOutline, settingsOutline,
+  chevronDownOutline
 } from 'ionicons/icons';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
 
 registerLocaleData(localeId, 'id');
 
@@ -37,7 +41,8 @@ registerLocaleData(localeId, 'id');
   imports: [
     CommonModule, 
     FormsModule, 
-    DatePipe, 
+    DatePipe,
+    RouterLink,
     IonContent, 
     IonHeader, 
     IonTitle, 
@@ -69,7 +74,9 @@ export class HrgaDashboardPage implements OnInit {
   constructor(
     private authService: AuthService,
     private http: HttpClient,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private alertController: AlertController,
+    private router: Router
   ) {
     addIcons({
       sunnyOutline, moonOutline, clipboardOutline, peopleOutline,
@@ -77,7 +84,8 @@ export class HrgaDashboardPage implements OnInit {
       personAddOutline, addCircleOutline, syncOutline, 
       documentTextOutline, checkmarkCircle, closeCircle,
       personCircleOutline, logOutOutline, locationOutline, 
-      callOutline, businessOutline, settingsOutline
+      callOutline, businessOutline, settingsOutline,
+      chevronDownOutline
     });
     this.isDarkMode$ = this.themeService.isDarkMode;
   }
@@ -87,6 +95,27 @@ export class HrgaDashboardPage implements OnInit {
       this.user = user;
     });
     this.loadDashboardData();
+  }
+
+  async confirmLogout() {
+    const alert = await this.alertController.create({
+      header: 'Konfirmasi Logout',
+      message: 'Apakah Anda yakin ingin keluar?',
+      buttons: [
+        {
+          text: 'Batal',
+          role: 'cancel'
+        },
+        {
+          text: 'Logout',
+          handler: () => {
+            this.logout();
+          }
+        }
+      ]
+    });
+    
+    await alert.present();
   }
 
   loadDashboardData(event?: any) {
@@ -112,25 +141,18 @@ export class HrgaDashboardPage implements OnInit {
 
   logout() {
     this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   toggleTheme() {
     this.themeService.toggleTheme();
   }
 
-  /**
-   * Menangani error saat memuat gambar profil
-   * @param event Error event dari tag img
-   */
   onImgError(event: any) {
     event.target.src = 'https://ionicframework.com/docs/img/demos/avatar.svg';
   }
 
-  /**
-   * Membuka pengaturan profil
-   */
   openProfileSettings() {
-    // Implementasi navigasi ke halaman pengaturan profil
     console.log('Navigasi ke halaman pengaturan profil');
   }
 }

@@ -1,128 +1,194 @@
 <style>
-    /* Mengatur font untuk seluruh halaman agar sesuai tema */
+    /* Font dan dasar tampilan */
     ion-content {
         font-family: var(--ion-font-family);
+        --ion-font-family: var(--ion-font-family);
     }
     
-    /* Styling Kartu Login agar sesuai tema */
+    /* Kartu login yang lebih elegan */
     .themed-login-card {
         background-color: var(--ion-item-background);
-        border: 1px solid rgba(var(--ion-text-color-rgb), 0.1);
-        box-shadow: 0 10px 25px rgba(var(--ion-text-color-rgb), 0.05);
+        border-radius: 16px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
     }
 
-    /* Styling tombol utama dengan warna tema */
+    /* Tombol utama yang lebih profesional */
     .themed-button-login {
-        background-color: var(--ion-color-secondary);
-        color: var(--ion-color-secondary-contrast);
-        font-weight: 700; /* Font-weight dari font Lato */
-        box-shadow: 0 4px 15px rgba(var(--ion-color-secondary-rgb), 0.25);
+        background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-tint) 100%);
+        color: var(--ion-color-primary-contrast);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-radius: 12px;
+        height: 48px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
     }
     
     .themed-button-login:hover {
-        background-color: var(--ion-color-secondary-shade);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(var(--ion-color-primary-rgb), 0.3);
     }
     
-    /* Styling input agar sesuai tema */
+    .themed-button-login:active {
+        transform: translateY(0);
+    }
+    
+    /* Input field putih di semua tema */
     .themed-input {
-        background-color: var(--ion-background-color);
-        color: var(--ion-text-color);
-        border: 1px solid rgba(var(--ion-text-color-rgb), 0.2);
+        background-color: #ffffff !important;
+        border: 1px solid var(--ion-color-medium);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        color: #000000 !important;
+        caret-color: #000000 !important;
     }
 
     .themed-input:focus-within {
-        border-color: var(--ion-color-secondary);
-        box-shadow: 0 0 0 2px rgba(var(--ion-color-secondary-rgb), 0.2);
+        border-color: var(--ion-color-primary);
+        box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.1);
     }
     
-    /* Styling untuk teks-teks sekunder */
+    /* Typography yang lebih baik */
     .themed-text-title {
         color: var(--ion-text-color);
-        font-family: 'Inter', sans-serif; /* Menggunakan font Inter untuk judul agar lebih tegas */
-    }
-    .themed-text-subtitle {
-        color: var(--ion-color-medium);
-    }
-    .themed-icon {
-        color: var(--ion-color-secondary);
+        font-weight: 700;
+        letter-spacing: -0.5px;
     }
     
-    /* Styling tombol ganti tema */
+    .themed-text-subtitle {
+        color: var(--ion-color-medium);
+        font-weight: 400;
+    }
+    
+    /* Toggle tema yang lebih halus */
     .themed-theme-toggle {
         background-color: var(--ion-background-color);
-        border: 1px solid rgba(var(--ion-text-color-rgb), 0.1);
+        border: 1px solid rgba(var(--ion-text-color-rgb), 0.08);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .themed-theme-toggle:hover {
+        transform: rotate(15deg);
     }
 
+    /* Animasi halus untuk logo */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    .logo-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    /* Additional styles for form elements */
+    .form-label {
+        color: var(--ion-text-color);
+    }
+
+    .forgot-password-link {
+        color: var(--ion-color-primary);
+    }
+
+    .card-footer {
+        border-top: 1px solid rgba(var(--ion-text-color-rgb), 0.1);
+    }
+
+    /* Solusi untuk autofill Chrome */
+    .themed-input:-webkit-autofill,
+    .themed-input:-webkit-autofill:hover,
+    .themed-input:-webkit-autofill:focus,
+    .themed-input:-webkit-autofill:active {
+        -webkit-text-fill-color: #000000 !important;
+        -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    }
 </style>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ion-padding">
     <div class="min-h-screen flex items-center justify-center p-4 antialiased">
         <div class="w-full max-w-md relative">
-            <div class="themed-login-card rounded-2xl overflow-hidden transition-all duration-300">
+            <div class="themed-login-card p-1">
+                <!-- Floating gradient background -->
+                <div class="absolute inset-0 overflow-hidden opacity-10">
+                    <div class="absolute -top-32 -left-32 w-64 h-64 bg-gradient-to-r from-purple-300 to-blue-300 rounded-full filter blur-3xl"></div>
+                    <div class="absolute -bottom-32 -right-32 w-64 h-64 bg-gradient-to-r from-yellow-300 to-red-300 rounded-full filter blur-3xl"></div>
+                </div>
                 
-                <div class="absolute top-4 right-4 z-10">
-                    <button (click)="toggleTheme()" aria-label="Toggle theme"
-                        class="themed-theme-toggle p-2 rounded-full shadow-md hover:opacity-80 transition">
-                        <svg *ngIf="!isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                        <svg *ngIf="isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M12 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="p-8 text-center">
-                    <div class="flex justify-center mb-5">
-                        <img src="assets/img/dapuremak.png" alt="DapurEmak Logo" class="w-24 h-24 object-contain">
-                    </div>
-                    <h1 class="text-3xl font-bold themed-text-title tracking-tight">DapurEmak</h1>
-                    <p class="themed-text-subtitle mt-1">Solusi Kenyang Massal</p>
-                </div>
-
-                <div class="px-8 pb-8">
-                    <h2 class="text-xl font-semibold text-center themed-text-subtitle mb-6">Masuk ke Akun Anda</h2>
-                    
-                    <form [formGroup]="loginForm" (ngSubmit)="login()" class="space-y-6">
-                        <div class="space-y-1">
-                            <label for="email" class="block text-sm font-medium">Alamat Email</label>
-                            <div class="themed-input flex items-center rounded-lg transition-all duration-300">
-                                <span class="pl-3">
-                                    <svg class="h-5 w-5 themed-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
-                                </span>
-                                <input type="email" id="email" formControlName="email"
-                                    class="block w-full px-3 py-3 border-0 bg-transparent focus:outline-none focus:ring-0"
-                                    placeholder="isi email disini" required>
-                            </div>
-                        </div>
-
-                        <div class="space-y-1">
-                            <label for="password" class="block text-sm font-medium">Password</label>
-                             <div class="themed-input flex items-center rounded-lg transition-all duration-300">
-                                <span class="pl-3">
-                                    <svg class="h-5 w-5 themed-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
-                                </span>
-                                <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
-                                    class="block w-full px-3 py-3 border-0 bg-transparent focus:outline-none focus:ring-0"
-                                    placeholder="••••••••" required>
-                                <button type="button" (click)="togglePasswordVisibility()" class="px-3">
-                                     <svg *ngIf="!showPassword" class="h-5 w-5 themed-text-subtitle" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                     <svg *ngIf="showPassword" class="h-5 w-5 themed-text-subtitle" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064 7 9.542 7 .847 0 1.67.127 2.458.36M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <button type="submit" [disabled]="loginForm.invalid"
-                            class="w-full py-3 px-4 rounded-lg themed-button-login transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                            Masuk
+                <div class="relative z-10">
+                    <!-- Theme toggle button -->
+                    <div class="absolute top-4 right-4 z-20">
+                        <button (click)="toggleTheme()" aria-label="Toggle theme"
+                            class="themed-theme-toggle shadow-sm hover:shadow-md">
+                            <svg *ngIf="!isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                            <svg *ngIf="isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M12 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
                         </button>
-                    </form>
-                </div>
+                    </div>
 
-                <div class="px-8 py-4 themed-text-subtitle/50 border-t" style="border-color: rgba(var(--ion-text-color-rgb), 0.1);">
-                    <p class="text-xs text-center">
-                        © {{ currentYear }} DapurEmak. All rights reserved.
-                    </p>
+                    <!-- Header section -->
+                    <div class="p-8 text-center">
+                        <div class="flex justify-center mb-5">
+                            <img src="assets/icon/dapuremak.png" alt="DapurEmak Logo" class="w-24 h-24 object-contain logo-float">
+                        </div>
+                        <h1 class="text-3xl font-bold themed-text-title tracking-tight">DapurEmak</h1>
+                        <p class="themed-text-subtitle mt-2 text-sm">Solusi Kenyang Massal</p>
+                    </div>
+
+                    <!-- Form section -->
+                    <div class="px-8 pb-8">
+                        <h2 class="text-xl font-semibold text-center themed-text-title mb-6">Masuk ke Akun Anda</h2>
+                        
+                        <form [formGroup]="loginForm" (ngSubmit)="login()" class="space-y-5">
+                            <!-- Email input -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium form-label mb-1">Email</label>
+                                <input type="email" id="email" formControlName="email"
+                                    class="w-full px-4 py-3 themed-input"
+                                    placeholder="email@contoh.com">
+                            </div>
+
+                            <!-- Password input -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label for="password" class="block text-sm font-medium form-label">Password</label>
+                                </div>
+                                <div class="relative">
+                                    <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+                                        class="w-full px-4 py-3 themed-input"
+                                        placeholder="••••••••">
+                                    <button type="button" (click)="togglePasswordVisibility()" 
+                                        class="absolute right-3 top-3 text-gray-500 dark:text-gray-400">
+                                        <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" class="text-lg"></ion-icon>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Submit button -->
+                            <button type="submit" [disabled]="loginForm.invalid"
+                                class="w-full py-3 px-4 themed-button-login mt-6">
+                                Masuk
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="px-8 py-4 text-center card-footer">
+                        <p class="text-xs themed-text-subtitle">
+                            © {{ currentYear }} DapurEmak. All rights reserved.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

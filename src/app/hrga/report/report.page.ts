@@ -4,15 +4,21 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {
     IonContent, IonHeader, IonTitle, IonToolbar, IonSpinner, IonButton,
-    IonIcon, ToastController, IonButtons, IonToggle, IonSelect, IonSelectOption
+    IonIcon, ToastController, IonButtons, IonToggle, IonSelect, IonSelectOption,
+    AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, downloadOutline, sunnyOutline, moonOutline, documentTextOutline, searchOutline, warningOutline, fileTrayOutline, documentAttachOutline, gridOutline } from 'ionicons/icons';
+import { 
+    calendarOutline, downloadOutline, sunnyOutline, moonOutline, documentTextOutline, 
+    searchOutline, warningOutline, fileTrayOutline, documentAttachOutline, gridOutline,
+    logOutOutline
+} from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/services/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-report',
@@ -21,7 +27,7 @@ import { Observable } from 'rxjs';
     imports: [
         CommonModule, FormsModule, DatePipe, TitleCasePipe, IonContent, IonHeader, IonTitle,
         IonToolbar, IonSpinner, IonButton, IonIcon, IonButtons, IonToggle,
-        IonSelect, IonSelectOption // Import yang baru
+        IonSelect, IonSelectOption
     ]
 })
 export class ReportPage implements OnInit {
@@ -29,7 +35,7 @@ export class ReportPage implements OnInit {
     filter = 'daily';
     selectedDate: string = new Date().toISOString().split('T')[0];
     
-    isLoading = false; // Set ke false, aktifkan hanya saat memuat
+    isLoading = false;
     errorMessage: string | null = null;
     apiUrl = `${environment.apiUrl}/hrga/konsumsi/report`;
 
@@ -39,11 +45,14 @@ export class ReportPage implements OnInit {
         private http: HttpClient,
         private toastController: ToastController,
         private authService: AuthService,
-        private themeService: ThemeService
+        private themeService: ThemeService,
+        private alertController: AlertController,
+        private router: Router
     ) {
         addIcons({ 
             calendarOutline, downloadOutline, sunnyOutline, moonOutline, documentTextOutline, 
-            searchOutline, warningOutline, fileTrayOutline, documentAttachOutline, gridOutline 
+            searchOutline, warningOutline, fileTrayOutline, documentAttachOutline, gridOutline,
+            logOutOutline
         });
         this.isDarkMode$ = this.themeService.isDarkMode;
     }
@@ -73,6 +82,32 @@ export class ReportPage implements OnInit {
         });
     }
     
+    async confirmLogout() {
+        const alert = await this.alertController.create({
+            header: 'Konfirmasi Logout',
+            message: 'Apakah Anda yakin ingin keluar?',
+            buttons: [
+                {
+                    text: 'Batal',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Logout',
+                    handler: () => {
+                        this.logout();
+                    }
+                }
+            ]
+        });
+        
+        await alert.present();
+    }
+
+    logout() {
+        this.authService.logout();
+        this.router.navigate(['/login']);
+    }
+
     toggleTheme() {
         this.themeService.toggleTheme();
     }

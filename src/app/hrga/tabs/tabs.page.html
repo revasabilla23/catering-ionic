@@ -1,85 +1,171 @@
-<!--
-  ============================================================================
-  File: 		tabs.page.html (Disesuaikan dengan variables.scss)
-  Deskripsi: 	Komponen Tabs yang menerapkan sistem warna dan gaya modern
-            	(outline/filled icons) sesuai tema aplikasi.
-  Versi: 		2.0
-  ============================================================================
--->
-
-<!-- 
-    CSS kustom untuk menyempurnakan tampilan Tab Bar.
-    - Menambahkan border atas.
-    - Mengatur warna tab aktif sesuai variabel tema.
-    - Mengganti ikon dari outline menjadi filled saat aktif.
--->
 <style>
     ion-tab-bar {
-        border-top: 1px solid rgba(var(--ion-text-color-rgb), 0.1);
-        padding-top: 4px;
-        padding-bottom: 4px;
-        height: 60px;
+        --background: var(--ion-color-light);
+        --border: none;
+        box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.05);
+        height: 56px; /* Reduced from 70px */
+        padding: 0;
+        position: relative;
+    }
+
+    .tab-scroll-container {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        height: 100%;
+        scrollbar-width: none;
+    }
+
+    .tab-scroll-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-inner-container {
+        display: flex;
+        height: 100%;
+        min-width: 100%;
+        align-items: center;
+        padding: 0 6px; /* Reduced padding */
     }
 
     ion-tab-button {
-        color: var(--ion-color-medium);
+        --color: var(--ion-color-medium);
+        --color-selected: var(--ion-color-primary);
+        --padding-top: 6px; /* Reduced padding */
+        --padding-bottom: 6px; /* Reduced padding */
+        flex: 1 0 auto;
+        min-width: 70px; /* Reduced from 80px */
+        max-width: 90px; /* Reduced from 120px */
+        height: 100%;
+        scroll-snap-align: start;
+        position: relative;
+        transition: all 0.2s ease;
     }
-    
-    ion-tab-button.tab-selected {
-        color: var(--ion-color-secondary);
-        font-weight: 700;
+
+    ion-tab-button::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 2px; /* Thinner indicator */
+        background: var(--ion-color-primary);
+        transition: width 0.2s ease;
     }
-    
-    /* Logika untuk menampilkan/menyembunyikan ikon */
+
+    ion-tab-button.tab-selected::after {
+        width: 50%; /* Slightly shorter indicator */
+    }
+
+    ion-tab-button .tab-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+    }
+
+    ion-tab-button ion-icon {
+        font-size: 20px; /* Smaller icons */
+        margin-bottom: 2px; /* Reduced spacing */
+        transition: transform 0.2s ease;
+    }
+
+    ion-tab-button.tab-selected ion-icon {
+        transform: translateY(-1px); /* Smaller lift effect */
+    }
+
+    ion-tab-button ion-label {
+        font-size: 10px; /* Smaller text */
+        font-weight: 500;
+        letter-spacing: 0.1px;
+        margin-top: 1px; /* Reduced spacing */
+    }
+
+    /* Active/inactive icon logic */
     .icon-default { display: block; }
     .icon-active { display: none; }
-
     .tab-selected .icon-default { display: none; }
     .tab-selected .icon-active { display: block; }
+
+    /* Logout button styling */
+    ion-tab-button.logout-button {
+        --color: var(--ion-color-danger);
+        --color-selected: var(--ion-color-danger-shade);
+    }
+
+    /* Fade effect on scroll edges */
+    .scroll-fade {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 20px; /* Narrower fade */
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .scroll-fade-left {
+        left: 0;
+        background: linear-gradient(to right, var(--ion-color-light) 20%, transparent);
+    }
+
+    .scroll-fade-right {
+        right: 0;
+        background: linear-gradient(to left, var(--ion-color-light) 20%, transparent);
+    }
 </style>
 
 <ion-tabs>
     <ion-tab-bar slot="bottom">
+        <div class="scroll-fade scroll-fade-left"></div>
+        <div class="tab-scroll-container">
+            <div class="tab-inner-container">
+                <ion-tab-button tab="dashboard" href="/hrga/dashboard">
+                    <div class="tab-content">
+                        <ion-icon name="home-outline" class="icon-default" aria-hidden="true"></ion-icon>
+                        <ion-icon name="home" class="icon-active" aria-hidden="true"></ion-icon>
+                        <ion-label>Dashboard</ion-label>
+                    </div>
+                </ion-tab-button>
 
-        <ion-tab-button tab="dashboard" href="/hrga/dashboard">
-            <div class="flex flex-col items-center justify-center">
-                <ion-icon name="home-outline" class="icon-default" aria-hidden="true"></ion-icon>
-                <ion-icon name="home" class="icon-active" aria-hidden="true"></ion-icon>
-                <ion-label>Dashboard</ion-label>
-            </div>
-        </ion-tab-button>
+                <ion-tab-button tab="employees" href="/hrga/employees">
+                    <div class="tab-content">
+                        <ion-icon name="people-outline" class="icon-default" aria-hidden="true"></ion-icon>
+                        <ion-icon name="people" class="icon-active" aria-hidden="true"></ion-icon>
+                        <ion-label>Karyawan</ion-label>
+                    </div>
+                </ion-tab-button>
 
-        <ion-tab-button tab="employees" href="/hrga/employees">
-            <div class="flex flex-col items-center justify-center">
-                <ion-icon name="people-outline" class="icon-default" aria-hidden="true"></ion-icon>
-                <ion-icon name="people" class="icon-active" aria-hidden="true"></ion-icon>
-                <ion-label>Karyawan</ion-label>
-            </div>
-        </ion-tab-button>
+                <ion-tab-button tab="orders" href="/hrga/orders">
+                    <div class="tab-content">
+                        <ion-icon name="reader-outline" class="icon-default" aria-hidden="true"></ion-icon>
+                        <ion-icon name="reader" class="icon-active" aria-hidden="true"></ion-icon>
+                        <ion-label>Order</ion-label>
+                    </div>
+                </ion-tab-button>
+                
+                <ion-tab-button tab="konsumsi" href="/hrga/konsumsi">
+                    <div class="tab-content">
+                        <ion-icon name="fast-food-outline" class="icon-default" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fast-food" class="icon-active" aria-hidden="true"></ion-icon>
+                        <ion-label>Konsumsi</ion-label>
+                    </div>
+                </ion-tab-button>
 
-        <ion-tab-button tab="orders" href="/hrga/orders">
-             <div class="flex flex-col items-center justify-center">
-                <ion-icon name="reader-outline" class="icon-default" aria-hidden="true"></ion-icon>
-                <ion-icon name="reader" class="icon-active" aria-hidden="true"></ion-icon>
-                <ion-label>Order</ion-label>
+                <ion-tab-button tab="report" href="/hrga/report">
+                    <div class="tab-content">
+                        <ion-icon name="analytics-outline" class="icon-default" aria-hidden="true"></ion-icon>
+                        <ion-icon name="analytics" class="icon-active" aria-hidden="true"></ion-icon>
+                        <ion-label>Report</ion-label>
+                    </div>
+                </ion-tab-button>
             </div>
-        </ion-tab-button>
-        
-        <ion-tab-button tab="konsumsi" href="/hrga/konsumsi">
-            <div class="flex flex-col items-center justify-center">
-                <ion-icon name="fast-food-outline" class="icon-default" aria-hidden="true"></ion-icon>
-                <ion-icon name="fast-food" class="icon-active" aria-hidden="true"></ion-icon>
-                <ion-label>Konsumsi</ion-label>
-            </div>
-        </ion-tab-button>
-
-        <ion-tab-button tab="report" href="/hrga/report">
-            <div class="flex flex-col items-center justify-center">
-                <ion-icon name="analytics-outline" class="icon-default" aria-hidden="true"></ion-icon>
-                <ion-icon name="analytics" class="icon-active" aria-hidden="true"></ion-icon>
-                <ion-label>Report</ion-label>
-            </div>
-        </ion-tab-button>
-
+        </div>
+        <div class="scroll-fade scroll-fade-right"></div>
     </ion-tab-bar>
 </ion-tabs>

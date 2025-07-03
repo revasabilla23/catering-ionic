@@ -9,12 +9,16 @@ import {
     IonButtons, IonToggle
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-// Ikon 'search' ditambahkan, ikon 'calendar' dan fab 'add' tidak lagi utama
-import { add, trash, create, search, sunnyOutline, moonOutline, documentTextOutline, createOutline, trashOutline } from 'ionicons/icons';
+import { 
+    add, trash, create, search, sunnyOutline, moonOutline, 
+    documentTextOutline, createOutline, trashOutline, logOutOutline 
+} from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
 import { OrderFormComponent } from 'src/app/hrga/order-form/order-form.component';
 import { ThemeService } from '../../services/theme.service';
 import { Observable } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-orders',
@@ -42,9 +46,14 @@ export class OrdersPage implements OnInit {
         private alertController: AlertController,
         private toastController: ToastController,
         private modalController: ModalController,
-        private themeService: ThemeService
+        private themeService: ThemeService,
+        private authService: AuthService,
+        private router: Router
     ) {
-        addIcons({ add, trash, create, search, sunnyOutline, moonOutline, documentTextOutline, createOutline, trashOutline });
+        addIcons({ 
+            add, trash, create, search, sunnyOutline, moonOutline, 
+            documentTextOutline, createOutline, trashOutline, logOutOutline 
+        });
         this.isDarkMode$ = this.themeService.isDarkMode;
     }
 
@@ -64,7 +73,7 @@ export class OrdersPage implements OnInit {
 
         this.http.get<any>(this.apiUrl, { params }).subscribe({
             next: (response) => {
-                this.orders = response.data.data ? response.data.data : response.data; // Sesuaikan dengan struktur API Anda
+                this.orders = response.data.data ? response.data.data : response.data;
                 this.isLoading = false;
                 if (event) event.target.complete();
             },
@@ -104,12 +113,33 @@ export class OrdersPage implements OnInit {
     async confirmDelete(order: any) {
         const alert = await this.alertController.create({
             header: 'Konfirmasi Hapus',
-            message: `Hapus pesanan untuk <strong>${order.menu.namaMenu}</strong> pada tanggal <strong>${new DatePipe('id-ID').transform(order.tanggalPesanan, 'd MMM y')}</strong>?`,
+            message: `Hapus pesanan untuk ${order.menu.namaMenu} pada tanggal ${new DatePipe('id-ID').transform(order.tanggalPesanan, 'd MMM y')} ?`,
             buttons: [
                 { text: 'Batal', role: 'cancel' },
                 { text: 'Hapus', role: 'confirm', handler: () => this.deleteOrder(order.IdPesanan) },
             ],
         });
+        await alert.present();
+    }
+
+    async confirmLogout() {
+        const alert = await this.alertController.create({
+            header: 'Konfirmasi Logout',
+            message: 'Apakah Anda yakin ingin keluar?',
+            buttons: [
+                {
+                    text: 'Batal',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Logout',
+                    handler: () => {
+                        this.logout();
+                    }
+                }
+            ]
+        });
+        
         await alert.present();
     }
 
@@ -126,8 +156,13 @@ export class OrdersPage implements OnInit {
         });
     }
 
+    logout() {
+        this.authService.logout();
+        this.router.navigate(['/login']);
+    }
+
     handleRefresh(event: any) {
-        this.resetFilter(); // Sebaiknya reset filter saat refresh
+        this.resetFilter();
     }
 
     toggleTheme() {

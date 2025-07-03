@@ -5,18 +5,16 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonSpinner, IonButton, 
   IonIcon, IonDatetime, IonModal, IonButtons,
-  // 1. Tambahkan IonToggle
-  IonToggle
+  IonToggle, AlertController
 } from '@ionic/angular/standalone';
 import { Chart, registerables } from 'chart.js';
 import { addIcons } from 'ionicons';
-// 2. Tambahkan ikon untuk tema
-import { calendarOutline, sunnyOutline, moonOutline } from 'ionicons/icons';
+import { calendarOutline, sunnyOutline, moonOutline, logOutOutline } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
-
-// 3. Import ThemeService dan Observable
 import { ThemeService } from '../../services/theme.service';
 import { Observable } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 Chart.register(...registerables); 
 
@@ -27,9 +25,7 @@ Chart.register(...registerables);
   imports: [
     CommonModule, FormsModule, DatePipe, IonContent, IonHeader, IonTitle, 
     IonToolbar, IonSpinner, IonButton, IonIcon, IonDatetime,
-    IonModal, IonButtons,
-    // 4. Daftarkan IonToggle
-    IonToggle
+    IonModal, IonButtons, IonToggle
   ]
 })
 export class KonsumsiPage implements OnInit, OnDestroy, AfterViewInit {
@@ -42,18 +38,16 @@ export class KonsumsiPage implements OnInit, OnDestroy, AfterViewInit {
   isLoading = true;
   errorMessage: string | null = null;
   chart: Chart | undefined;
-
-  // 5. Tambahkan properti isDarkMode$
   isDarkMode$: Observable<boolean>;
 
   constructor(
     private http: HttpClient,
-    // 6. Suntikkan ThemeService
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private authService: AuthService,
+    private router: Router,
+    private alertController: AlertController
   ) {
-    // 7. Daftarkan ikon tema
-    addIcons({ 'calendar-outline': calendarOutline, sunnyOutline, moonOutline });
-    // 8. Hubungkan properti dengan service
+    addIcons({ calendarOutline, sunnyOutline, moonOutline, logOutOutline });
     this.isDarkMode$ = this.themeService.isDarkMode;
   }
 
@@ -103,7 +97,32 @@ export class KonsumsiPage implements OnInit, OnDestroy, AfterViewInit {
      this.modal.dismiss();
   }
 
-  // 9. Tambahkan metode toggleTheme()
+  async confirmLogout() {
+    const alert = await this.alertController.create({
+      header: 'Konfirmasi Logout',
+      message: 'Apakah Anda yakin ingin keluar?',
+      buttons: [
+        {
+          text: 'Batal',
+          role: 'cancel'
+        },
+        {
+          text: 'Logout',
+          handler: () => {
+            this.logout();
+          }
+        }
+      ]
+    });
+    
+    await alert.present();
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
   toggleTheme() {
     this.themeService.toggleTheme();
   }

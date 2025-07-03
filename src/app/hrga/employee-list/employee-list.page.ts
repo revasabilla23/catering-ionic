@@ -13,30 +13,44 @@ import {
   IonRefresherContent, IonSpinner, IonButton, IonButtons, IonIcon,
   AlertController, ToastController, ModalController, IonFab, IonFabButton, IonBadge,
   IonToggle,
-  // PENYESUAIAN: Tambahkan IonList dan IonItem ke daftar impor
   IonList,
   IonItem
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   add, trash, create, mail, sync, eye, sunnyOutline, moonOutline,
-  // PENYESUAIAN: Tambahkan ikon baru untuk UI yang lebih baik
-  peopleOutline, createOutline, trashOutline, mailOutline
+  peopleOutline, createOutline, trashOutline, mailOutline, logOutOutline
 } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
 import { EmployeeFormComponent } from '../employee-form/employee-form.component';
 import { ThemeService } from '../../services/theme.service';
 import { Observable } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.page.html',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, DatePipe, IonContent, IonHeader, IonTitle, IonToolbar,
-    IonSearchbar, IonRefresher, IonRefresherContent, IonSpinner, IonButton,
-    IonButtons, IonIcon, IonFab, IonFabButton, IonBadge, IonToggle,
-    // PENYESUAIAN: Tambahkan IonList dan IonItem di sini juga
+    CommonModule, 
+    FormsModule, 
+    DatePipe, 
+    IonContent, 
+    IonHeader, 
+    IonTitle, 
+    IonToolbar,
+    IonSearchbar, 
+    IonRefresher, 
+    IonRefresherContent, 
+    IonSpinner, 
+    IonButton,
+    IonButtons, 
+    IonIcon, 
+    IonFab, 
+    IonFabButton, 
+    IonBadge, 
+    IonToggle,
     IonList,
     IonItem
   ],
@@ -54,12 +68,13 @@ export class EmployeeListPage implements OnInit {
     private alertController: AlertController,
     private toastController: ToastController,
     private modalController: ModalController,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private authService: AuthService,
+    private router: Router
   ) {
-    // PENYESUAIAN: Menambahkan ikon baru yang digunakan di HTML
     addIcons({
       add, trash, create, mail, sync, eye, sunnyOutline, moonOutline,
-      peopleOutline, createOutline, trashOutline, mailOutline
+      peopleOutline, createOutline, trashOutline, mailOutline, logOutOutline
     });
     this.isDarkMode$ = this.themeService.isDarkMode;
   }
@@ -121,13 +136,18 @@ export class EmployeeListPage implements OnInit {
     return await modal.present();
   }
 
-  handleRefresh(event: any) { this.loadEmployees(event); }
-  handleSearch(event: any) { this.loadEmployees(null, event.detail.value || ''); }
+  handleRefresh(event: any) { 
+    this.loadEmployees(event); 
+  }
+
+  handleSearch(event: any) { 
+    this.loadEmployees(null, event.detail.value || ''); 
+  }
 
   async confirmDelete(employee: any) {
     const alert = await this.alertController.create({
       header: 'Konfirmasi Hapus',
-      message: `Apakah Anda yakin ingin menghapus <strong>${employee.profile.name}</strong>?`,
+      message: `Apakah Anda yakin ingin menghapus ${employee.profile.name}?`,
       buttons: [
         { text: 'Batal', role: 'cancel' },
         { text: 'Hapus', role: 'confirm', handler: () => this.deleteEmployee(employee.IdUsers) },
@@ -152,7 +172,7 @@ export class EmployeeListPage implements OnInit {
   async confirmSendEmail(employee: any) {
     const alert = await this.alertController.create({
         header: 'Kirim Email Aktivasi',
-        message: `Kirim email ke <strong>${employee.profile.name}</strong> dan aktifkan statusnya?`,
+        message: `Kirim email ke ${employee.profile.name} dan aktifkan statusnya?`,
         buttons: [
             { text: 'Batal', role: 'cancel' },
             { text: 'Ya, Kirim', role: 'confirm', handler: () => this.sendActivationEmail(employee.IdUsers) },
@@ -203,8 +223,34 @@ export class EmployeeListPage implements OnInit {
     this.themeService.toggleTheme();
   }
 
+  async logout() {
+    const alert = await this.alertController.create({
+      header: 'Konfirmasi Logout',
+      message: 'Apakah Anda yakin ingin keluar?',
+      buttons: [
+        {
+          text: 'Batal',
+          role: 'cancel'
+        },
+        {
+          text: 'Logout',
+          handler: () => {
+            this.authService.logout();
+            this.router.navigate(['/login']);
+          }
+        }
+      ]
+    });
+    
+    await alert.present();
+  }
+
   async presentToast(message: string, color: 'success' | 'danger') {
-    const toast = await this.toastController.create({ message, duration: 2500, color });
+    const toast = await this.toastController.create({ 
+      message, 
+      duration: 2500, 
+      color 
+    });
     toast.present();
   }
 }

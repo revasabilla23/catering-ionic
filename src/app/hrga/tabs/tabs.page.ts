@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
+import { AuthService } from '../../services/auth.service';
 
-// Import kedua versi ikon: outline untuk default, dan filled untuk aktif
+// Import ikon
 import { 
     homeOutline, home, 
     peopleOutline, people, 
     readerOutline, reader, 
     fastFoodOutline, fastFood, 
-    analyticsOutline, analytics 
+    analyticsOutline, analytics,
+    logOutOutline, logOut
 } from 'ionicons/icons';
 
 @Component({
@@ -18,7 +20,7 @@ import {
     imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel]
 })
 export class TabsPage {
-    constructor() {
+    constructor(private authService: AuthService) {
         // Daftarkan semua ikon yang akan digunakan di tab bar
         addIcons({ 
             // Dashboard
@@ -39,7 +41,15 @@ export class TabsPage {
             
             // Report
             'analytics-outline': analyticsOutline, 
-            'analytics': analytics 
+            'analytics': analytics,
+            
+            // Logout
+            'log-out-outline': logOutOutline,
+            'log-out': logOut
         });
+    }
+
+    async logout() {
+        await this.authService.logout();
     }
 }
